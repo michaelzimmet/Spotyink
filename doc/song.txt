@@ -1,0 +1,38 @@
+Song:
+  Description:  Dataclass representing a Song
+  Variables:
+    - title:            String
+    - artists:          vector<String>
+    - is_playing:       bool
+    - total_time_ms:    int
+    - current_time_ms:  int
+    - cover:            Optional<Cover>
+
+
+Cover:
+  Description: Dataclass representing a Song cover
+  Variables:
+    - width:            int
+    - height:           int
+    - pixels:           vector<uint8_t>     direkt schwarz/weiß bild 1 Byte/Pixel
+  
+  Functions:
+    - get_packed():     vector<uint8_t>     1d bit liste, die für die display library
+                                            verarbeitbar ist. Darf nur einmal pro
+                                            Song aufgerufen werden, weil es jedes mal 
+                                            einen neuen speicher allokiert.
+    - dither():         void
+    - getWidth():       int
+    - getHeigth():      int
+
+
+Area:
+  Description: Oberklasse zum repräsentieren eines Bereichs auf dem Display (Layout)
+  Variables:
+    - x:                int
+    - y:                int
+    - width             int
+    - height            int
+    - margin            int
+
+  Functions:
