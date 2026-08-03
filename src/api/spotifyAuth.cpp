@@ -3,8 +3,8 @@
 #include <base64.h>
 #include <ArduinoJson.h>
 
-SpotifyAuth::SpotifyAuth(const String& clientId, const String& clientSecret, const String& redirectUri)
-    : clientId(clientId), clientSecret(clientSecret), redirectUri(redirectUri) {}
+SpotifyAuth::SpotifyAuth(const String& clientId, const String& redirectUri)
+    : clientId(clientId), redirectUri(redirectUri) {}
 
 String SpotifyAuth::getValidAccessToken() {
     if (millis() >= tokenExpiresAt) {
@@ -34,11 +34,11 @@ bool SpotifyAuth::hasRefreshToken() const {
 bool SpotifyAuth::refreshAccessToken() {
    http.begin(TOKEN_URL);
 
-   http.addHeader("Authorization", "Basic " + base64::encode(clientId + ":" + clientSecret));
    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
    String body = "grant_type=refresh_token";
    body += "&refresh_token=" + refreshToken;
+   body += "&cliend_id=" + clientId;
 
    int statusCode = http.POST(body);
    bool success = false;

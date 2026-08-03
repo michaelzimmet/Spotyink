@@ -5,7 +5,6 @@
 class SpotifyAuth {
     private:
         String clientId;
-        String clientSecret;
         String redirectUri;
 
         String accessToken;
@@ -20,7 +19,7 @@ class SpotifyAuth {
         bool parseTokenResponse(const String& responseBody);
 
     public:
-        SpotifyAuth(const String& clientId, const String& clientSecret, const String& redirectUri);
+        SpotifyAuth(const String& clientId, const String& redirectUri);
 
         void loadRefreshToken();
         bool refreshAccessToken();

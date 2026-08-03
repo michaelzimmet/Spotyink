@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/zimc/.platformio/platforms/espressif32/**)",
+      "Read(//home/zimc/.platformio/platforms/espressif32@7.0.1/**)"
+    ]
+  }
+}
