@@ -17,4 +17,9 @@ class SpotifyApi {
         bool getCurrentlyPlaying(Song& outSong);
         bool getCurrentlyPlayingStream(Song& outSong);
         bool getCurrentCover(Song& outSong);
+
+        void nextSong();
+        void toggleCurrentSongState(Song& currentSong);
+        void restartCurrentSong();
+        void previousSong();
 };

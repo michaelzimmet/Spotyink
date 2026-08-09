@@ -88,3 +88,9 @@ Plug the ESP32 into a power source and start playing something on Spotify.
 The first screen update can take up to 30 seconds — after that it should look
 like the screenshot above.
 
+
+
+## Further work
+Currently a kind of button is in progress to control the current playback.  
+E.g. skip song, previous song, pause, play...
+
