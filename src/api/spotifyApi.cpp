@@ -11,7 +11,7 @@ bool SpotifyApi::getCurrentlyPlaying(Song& outSong) {
 
     int statusCode = http.GET();
     bool success = false;
-
+    Serial.println("Status Code:" + String(statusCode));
     if (statusCode == 200) {
         JsonDocument filter;
         filter["is_playing"] = true;
@@ -60,7 +60,44 @@ bool SpotifyApi::getCurrentlyPlayingStream(Song& outSong) {
 }
 
 bool SpotifyApi::getCurrentCover(Song& outSong) {
-    return false;
+    std::tuple<String, int> cover_info(outSong.getCoverInfo(216));
+    String coverUrl = std::get<0>(cover_info);
+    int coverSize = std::get<1>(cover_info);
+
+    http.begin(coverUrl);
+    http.setReuse(false);
+    int responseCode = http.GET();
+
+    if (responseCode != 200) {
+        http.end();
+        return false;
+    }
+
+    int contentLength = http.getSize();
+    if (contentLength <= 0) {
+        http.end();
+        return false;
+    }
+
+    std::vector<uint8_t> jpegBytes(contentLength);
+    NetworkClient* stream = http.getStreamPtr();
+    size_t received = 0;
+
+    while(http.connected() && received < jpegBytes.size()) {
+        size_t available_len = stream->available();
+        if (available_len) {
+            received += stream->readBytes(jpegBytes.data() + received, std::min(available_len, jpegBytes.size() - received));
+        }
+    }
+
+    http.end();
+
+    Cover currentCover(coverSize, coverSize, std::move(jpegBytes));
+
+    currentCover.decode(coverSize, coverSize, 216, 216);
+    outSong.setCover(std::move(currentCover));
+
+    return true;
 }
 
 void SpotifyApi::nextSong() {

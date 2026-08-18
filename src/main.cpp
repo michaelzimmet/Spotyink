@@ -4,6 +4,7 @@
 #include <Fonts/FreeMonoBold12pt7b.h>
 #include <vector>
 #include <tuple>
+#include <utility>
 #include <WiFi.h>
 #include "../include/dataObjs/song/Song.h"
 #include "../include/components/ImageComponent.h"
@@ -11,7 +12,6 @@
 #include "../include/components/SymbolComponent.h"
 #include "../include/components/ProgressComponent.h"
 #include "../include/api/spotifyApi.h"
-#include "../include/api/CoverFetcher.h"
 #include "../include/secrets.h"
 
 // Crowbar Test Panel
@@ -32,10 +32,9 @@ const int EINK_SCK = 6;
 const int EINK_MOSI = 5;
 const int EINK_PWR = 11;
 
-SpotifyAuth spotifyAuth(SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI);
+SpotifyAuth spotifyAuth(SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URI);
 SpotifyApi spotifyApi(spotifyAuth);
-//DisplayType display(GxEPD2_579_GDEY0579T93(EINK_CS, EINK_DC, EINK_RST, EINK_BUSY));
-DisplayType display(GxEPD2_579c_GDEY0579F51(EINK_CS, EINK_DC, EINK_RST, EINK_BUSY));
+DisplayType display(GxEPD2_579_GDEY0579T93(EINK_CS, EINK_DC, EINK_RST, EINK_BUSY));
 
 String lastTrackId = "";
 Song currentSong("", "", 0);
@@ -56,7 +55,7 @@ void displayPowerOn() {
 void initDisplay() {
     Serial.begin(115200);
     displayPowerOn();
-    display.init(115200);
+    display.init(0);
     display.setRotation(0);
 }
 
@@ -143,7 +142,7 @@ unsigned long lastFetchMs = 0;
 unsigned long lastRefreshMs = 0;
 
 void loop() {
-    delay(200);    
+    delay(200);
     unsigned long now = millis();
     bool fetched = false;
 
@@ -153,12 +152,11 @@ void loop() {
         Song newSong("", "", 0);
         if (spotifyApi.getCurrentlyPlaying(newSong)) {
             if (newSong.getId() != lastTrackId) {
-                Cover cover;
-                std::tuple<String, int> preferredCover = newSong.getCoverInfo(216);
-                if (!fetchCover(std::get<0>(preferredCover), std::get<1>(preferredCover), 216, cover)) {
-                    cover = Cover(216, 216, std::vector<uint8_t>(216 * 216));
+                if (!spotifyApi.getCurrentCover(newSong)) {
+                    Cover cover(216, 216, std::vector<uint8_t>(((216 + 7) / 8) * 216, 0xFF));
+                    newSong.setCover(cover);
                 }
-                newSong.setCover(cover);
+
                 lastTrackId = newSong.getId();
                 currentSong = newSong;
 
@@ -181,7 +179,7 @@ void loop() {
         if (!fetched) {
             unsigned long updatedTimeMs = std::min(
                 currentSong.getCurrentTimeMs() + REFRESH_INTERVAL_MS, currentSong.getTotalTimeMs());
-            currentSong.setCurrentTimeMs(updatedTimeMs); 
+            currentSong.setCurrentTimeMs(updatedTimeMs);
         }
 
         lastRefreshMs = millis();

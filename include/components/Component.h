@@ -1,7 +1,5 @@
 #pragma once
 
-#include <GxEPD2_BW.h>
-#include <GxEPD2_GFX.h>
 #include <cstdint>
 #include <tuple>
 #include "../DisplayConfig.h"

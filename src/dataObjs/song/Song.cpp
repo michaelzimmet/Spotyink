@@ -1,5 +1,6 @@
 // Song.cpp
 #include "../include/dataObjs/song/Song.h"
+#include <cstdlib>
 
 Song::Song(String id, String t, int ttm) : id_(id), title_(t), totalTimeMs_(ttm), currentTimeMs_(0), 
     isPlaying_(false), cover_(), coverUrls_({}), coverWidths_({}) {}
@@ -28,10 +29,10 @@ const std::tuple<String, int> Song::getCoverInfo(int preferredWidth) const {
     int smallestDifference = std::numeric_limits<int>::max();
     
     for (size_t i = 0; i < coverUrls_.size(); i++) {
-        int difference = preferredWidth - coverWidths_[i];
+        int difference = std::abs(preferredWidth - coverWidths_[i]);
         if (difference < smallestDifference) {
             preferredIdx = i;
-            smallestDifference = difference; 
+            smallestDifference = difference;
         }
     }
 

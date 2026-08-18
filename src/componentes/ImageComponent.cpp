@@ -5,8 +5,8 @@ ImageComponent::ImageComponent(int x, int y, int width, int height, int margin, 
     : Component(x, y, width, height, margin), cover(c) {}
 
 void ImageComponent::draw(DisplayType& display) {
-    std::vector<uint8_t> dithered = cover.getDitheredPixels();
-    std::vector<uint8_t> packed = cover.getPackedPixels(dithered);
+    const uint16_t palette[2] = { GxEPD_BLACK, GxEPD_WHITE };
+    const std::vector<uint8_t>& pixels = cover.getPixels();
 
     std::tuple<int, int> startPos = getStartPos();
     std::tuple<int, int> dimensions = getDimension();
@@ -16,7 +16,12 @@ void ImageComponent::draw(DisplayType& display) {
     int imgHeight = std::get<1>(dimensions);
 
     // draw cover where cover refers to a one dimensional 1-bit vector 
-    display.drawBitmap(startX, startY, packed.data(), imgWidth, imgHeight, GxEPD_BLACK);
+    for (int y = 0; y < imgHeight; y++) {
+        for (int x = 0; x < imgWidth; x++) {
+            uint8_t index = cover.getPixelAt(x, y);
+            display.drawPixel(startX + x, startY + y, palette[index]);
+        }
+    }
 
     // draw a 2 pixel rect around the cover
     for (int i = 0; i < 2; i++) {

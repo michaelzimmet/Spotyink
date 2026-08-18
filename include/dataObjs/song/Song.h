@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <vector>
 #include <limits.h>
+#include <utility>
 #include "../cover/Cover.h"
 
 class Song {
@@ -25,7 +26,7 @@ class Song {
         void setArtists(const std::vector<String>& s) { artists_ = s; }
         void setPlaying(bool s) { isPlaying_ = s; }
         void setCurrentTimeMs(int s) { currentTimeMs_ = s; }
-        void setCover(const Cover& c) { cover_ = c; }
+        void setCover(Cover c) { cover_ = std::move(c); }
         void setCoverInfo(const std::vector<String>& url, const std::vector<int>& width);
 
         const std::vector<String>& getArtists() const { return artists_; }

@@ -38,13 +38,16 @@ bool SpotifyAuth::refreshAccessToken() {
 
    String body = "grant_type=refresh_token";
    body += "&refresh_token=" + refreshToken;
-   body += "&cliend_id=" + clientId;
+   body += "&client_id=" + clientId;
 
    int statusCode = http.POST(body);
    bool success = false;
+   String responseBody = http.getString();
 
    if (statusCode == 200) {
-        success = parseTokenResponse(http.getString());
+        success = parseTokenResponse(responseBody);
+   } else {
+        Serial.printf("Token refresh failed, status %d: %s\n", statusCode, responseBody.c_str());
    }
 
    http.end();

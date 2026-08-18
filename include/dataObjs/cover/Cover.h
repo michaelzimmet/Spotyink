@@ -9,12 +9,16 @@ class Cover {
         int height;
         std::vector<uint8_t> pixels;
 
-        void addError(std::vector<uint8_t>& buffer, const std::vector<uint8_t>& edgeMap, int idx, int error, int numerator, int denominator) const;
-        void setBit(std::vector<uint8_t>& packed, int bytesPerRow, int x, int y) const;
-        std::vector<uint8_t> stretchContrast(const std::vector<uint8_t>& source) const;
-        std::vector<uint8_t> applyContrastCurve(const std::vector<uint8_t>& source) const;
-        std::vector<uint8_t> computeEdgeStrength(const std::vector<uint8_t>& source) const;
-    
+        static std::vector<uint8_t>* decodeTarget;  // Graustufen-Zwischenpuffer fuer TJpg_Decoder-Callback
+        static int decodeTargetW;
+        static int decodeTargetH;
+        static int decodeSrcW;
+        static int decodeSrcH;
+
+        static bool jpegDecodeCallback(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap);
+        static void setPackedPixel(std::vector<uint8_t>& buf, int w, int x, int y, uint8_t value);
+        static uint8_t getPackedPixel(const std::vector<uint8_t>& buf, int w, int x, int y);
+
     public:
         Cover();
         Cover(int width, int height, std::vector<uint8_t> p);
@@ -22,6 +26,7 @@ class Cover {
         int getWidth() const { return width; }
         int getHeight() const { return height;}
         const std::vector<uint8_t>& getPixels() const { return pixels; }
-        std::vector<uint8_t> getDitheredPixels() const;
-        std::vector<uint8_t> getPackedPixels(const std::vector<uint8_t>& sourcePixels) const;
+
+        void decode(int sourceWidth, int sourceHeight, int targetWidth, int targetHeight);
+        uint8_t getPixelAt(int x, int y) const;
 };
